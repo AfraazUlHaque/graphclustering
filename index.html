@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graph Clustering Algorithm Comparator</title>
+  <meta name="description" content="Interactive simulation and visual comparison of graph clustering algorithms including K-Means, Spectral Clustering, Louvain, DBSCAN, and Girvan-Newman." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="bg-grid"></div>
+  <canvas id="bg-particles"></canvas>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <svg class="logo-icon" viewBox="0 0 40 40" fill="none">
+          <circle cx="10" cy="10" r="5" fill="url(#g1)"/>
+          <circle cx="30" cy="10" r="5" fill="url(#g2)"/>
+          <circle cx="20" cy="28" r="5" fill="url(#g3)"/>
+          <circle cx="10" cy="28" r="3" fill="url(#g1)" opacity=".6"/>
+          <line x1="10" y1="10" x2="30" y2="10" stroke="#7c5cfc" stroke-width="1.5"/>
+          <line x1="10" y1="10" x2="20" y2="28" stroke="#7c5cfc" stroke-width="1.5"/>
+          <line x1="30" y1="10" x2="20" y2="28" stroke="#00d4ff" stroke-width="1.5"/>
+          <line x1="10" y1="10" x2="10" y2="28" stroke="#7c5cfc" stroke-width="1" opacity=".6"/>
+          <defs>
+            <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#7c5cfc"/>
+              <stop offset="100%" stop-color="#00d4ff"/>
+            </linearGradient>
+            <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#00d4ff"/>
+              <stop offset="100%" stop-color="#a855f7"/>
+            </linearGradient>
+            <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#f97316"/>
+              <stop offset="100%" stop-color="#ec4899"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="logo-text">GraphCluster<span class="logo-accent">Lab</span></span>
+      </div>
+      <nav class="header-nav">
+        <a href="#simulation" class="nav-link">Simulate</a>
+        <a href="#metrics" class="nav-link">Metrics</a>
+        <a href="#info" class="nav-link">Learn</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">Interactive Simulation</div>
+      <h1 class="hero-title">Graph Clustering<br/><span class="gradient-text">Algorithm Comparator</span></h1>
+      <p class="hero-subtitle">Visualize, simulate, and compare state-of-the-art graph clustering algorithms in real-time. Explore how communities emerge from complex network structures.</p>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num">5</span><span class="stat-label">Algorithms</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num">∞</span><span class="stat-label">Graph Sizes</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num">8+</span><span class="stat-label">Metrics</span></div>
+      </div>
+      <button class="btn-primary" onclick="scrollToSection('simulation')">
+        Start Simulation
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+      </button>
+    </div>
+    <div class="hero-visual">
+      <canvas id="hero-canvas" width="500" height="400"></canvas>
+    </div>
+  </section>
+
+  <!-- Main Simulation Section -->
+  <section id="simulation" class="simulation-section">
+    <div class="section-header">
+      <h2 class="section-title">Algorithm Simulation</h2>
+      <p class="section-sub">Configure your graph, pick algorithms, and watch them cluster in real-time</p>
+    </div>
+
+    <div class="sim-layout">
+      <!-- Left: Controls -->
+      <div class="controls-panel glass-card">
+        <h3 class="panel-title">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+          Graph Configuration
+        </h3>
+
+        <div class="control-group">
+          <label class="ctrl-label">Graph Type</label>
+          <div class="btn-group" id="graph-type-group">
+            <button class="btn-toggle active" data-val="random" onclick="setGraphType(this,'random')">Random</button>
+            <button class="btn-toggle" data-val="cluster" onclick="setGraphType(this,'cluster')">Clustered</button>
+            <button class="btn-toggle" data-val="scale-free" onclick="setGraphType(this,'scale-free')">Scale-Free</button>
+            <button class="btn-toggle" data-val="grid" onclick="setGraphType(this,'grid')">Grid</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="ctrl-label">Nodes: <span id="node-count-val" class="ctrl-value">40</span></label>
+          <input type="range" id="node-count" class="slider" min="10" max="120" value="40" oninput="updateSliderVal('node-count','node-count-val')" />
+        </div>
+
+        <div class="control-group">
+          <label class="ctrl-label">Edge Density: <span id="edge-density-val" class="ctrl-value">0.15</span></label>
+          <input type="range" id="edge-density" class="slider" min="5" max="50" value="15" oninput="updateSliderVal('edge-density','edge-density-val',0.01)" />
+        </div>
+
+        <div class="control-group">
+          <label class="ctrl-label">Clusters (k): <span id="k-clusters-val" class="ctrl-value">4</span></label>
+          <input type="range" id="k-clusters" class="slider" min="2" max="10" value="4" oninput="updateSliderVal('k-clusters','k-clusters-val')" />
+        </div>
+
+        <button class="btn-generate" onclick="generateGraph()">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/></svg>
+          Generate New Graph
+        </button>
+
+        <div class="divider"></div>
+
+        <h3 class="panel-title">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg>
+          Select Algorithms
+        </h3>
+
+        <div class="algo-list" id="algo-list">
+          <label class="algo-item" id="algo-kmeans">
+            <input type="checkbox" checked onchange="toggleAlgo('kmeans',this.checked)" />
+            <div class="algo-dot" style="background: #7c5cfc;"></div>
+            <div class="algo-info">
+              <span class="algo-name">K-Means Graph</span>
+              <span class="algo-desc">Centroid-based partitioning</span>
+            </div>
+          </label>
+          <label class="algo-item" id="algo-spectral">
+            <input type="checkbox" checked onchange="toggleAlgo('spectral',this.checked)" />
+            <div class="algo-dot" style="background: #00d4ff;"></div>
+            <div class="algo-info">
+              <span class="algo-name">Spectral Clustering</span>
+              <span class="algo-desc">Laplacian eigenvector method</span>
+            </div>
+          </label>
+          <label class="algo-item" id="algo-louvain">
+            <input type="checkbox" checked onchange="toggleAlgo('louvain',this.checked)" />
+            <div class="algo-dot" style="background: #f97316;"></div>
+            <div class="algo-info">
+              <span class="algo-name">Louvain Method</span>
+              <span class="algo-desc">Modularity optimization</span>
+            </div>
+          </label>
+          <label class="algo-item" id="algo-dbscan">
+            <input type="checkbox" onchange="toggleAlgo('dbscan',this.checked)" />
+            <div class="algo-dot" style="background: #ec4899;"></div>
+            <div class="algo-info">
+              <span class="algo-name">DBSCAN</span>
+              <span class="algo-desc">Density-based spatial clustering</span>
+            </div>
+          </label>
+          <label class="algo-item" id="algo-girvan">
+            <input type="checkbox" onchange="toggleAlgo('girvan',this.checked)" />
+            <div class="algo-dot" style="background: #22c55e;"></div>
+            <div class="algo-info">
+              <span class="algo-name">Girvan-Newman</span>
+              <span class="algo-desc">Edge betweenness removal</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="control-group">
+          <label class="ctrl-label">Animation Speed</label>
+          <div class="btn-group">
+            <button class="btn-toggle active" onclick="setSpeed(this,1)">1x</button>
+            <button class="btn-toggle" onclick="setSpeed(this,2)">2x</button>
+            <button class="btn-toggle" onclick="setSpeed(this,4)">4x</button>
+          </div>
+        </div>
+
+        <button class="btn-run" id="run-btn" onclick="runSimulation()">
+          <svg id="run-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/></svg>
+          Run All Algorithms
+        </button>
+      </div>
+
+      <!-- Center: Canvas Grid -->
+      <div class="canvas-area">
+        <div class="canvas-toolbar">
+          <div class="toolbar-left">
+            <span class="toolbar-label">Graph Preview</span>
+            <div class="node-edge-info">
+              <span id="node-info">Nodes: 0</span>
+              <span id="edge-info">Edges: 0</span>
+            </div>
+          </div>
+          <div class="toolbar-right">
+            <button class="icon-btn" title="Fit to view" onclick="fitView()">
+              <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 011.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 011.414-1.414L15 13.586V12a1 1 0 011-1z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="canvas-grid" id="canvas-grid">
+          <!-- Canvases will be injected here by JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Metrics Section -->
+  <section id="metrics" class="metrics-section">
+    <div class="section-header">
+      <h2 class="section-title">Performance Metrics</h2>
+      <p class="section-sub">Quantitative comparison across clustering quality measures</p>
+    </div>
+    <div id="metrics-content" class="metrics-placeholder">
+      <svg viewBox="0 0 60 60" fill="none"><circle cx="30" cy="30" r="28" stroke="#7c5cfc" stroke-width="2" stroke-dasharray="8 4" opacity=".4"/><path d="M20 38 L25 28 L30 33 L35 22 L40 30" stroke="#00d4ff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      <p>Run the simulation to see metrics</p>
+    </div>
+    <div id="metrics-grid" class="metrics-grid" style="display:none;"></div>
+    <div id="comparison-table-wrap" class="comparison-wrap" style="display:none;">
+      <h3 class="panel-title" style="margin-bottom:1rem;">Full Comparison Table</h3>
+      <div class="table-scroll">
+        <table class="compare-table" id="compare-table"></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Info Section -->
+  <section id="info" class="info-section">
+    <div class="section-header">
+      <h2 class="section-title">Algorithm Deep Dive</h2>
+      <p class="section-sub">Understand how each algorithm approaches the clustering problem</p>
+    </div>
+    <div class="info-grid">
+      <div class="info-card glass-card" style="--accent:#7c5cfc">
+        <div class="info-icon" style="background:rgba(124,92,252,.15)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#7c5cfc" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="6" r="2"/><circle cx="20" cy="6" r="2"/><circle cx="4" cy="18" r="2"/><circle cx="20" cy="18" r="2"/><path d="M12 9 L4 8 M12 9 L20 8 M12 15 L4 16 M12 15 L20 16"/></svg>
+        </div>
+        <h4>K-Means Graph</h4>
+        <p>Projects nodes into a feature space (using degree, betweenness centrality, and clustering coefficient) then applies iterative centroid-based partitioning. Fast convergence with O(nk) complexity.</p>
+        <div class="info-tags"><span>O(nk·iter)</span><span>Partitional</span><span>k required</span></div>
+      </div>
+      <div class="info-card glass-card" style="--accent:#00d4ff">
+        <div class="info-icon" style="background:rgba(0,212,255,.12)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2"><path d="M2 12 L22 12 M12 2 L12 22"/><path d="M6 6 L18 18 M18 6 L6 18" stroke-width="1" opacity=".5"/></svg>
+        </div>
+        <h4>Spectral Clustering</h4>
+        <p>Constructs the normalized graph Laplacian, computes the k smallest eigenvectors, and embeds nodes into a low-dimensional eigenspace before running k-means. Excellent for non-convex clusters.</p>
+        <div class="info-tags"><span>O(n³)</span><span>Spectral</span><span>k required</span></div>
+      </div>
+      <div class="info-card glass-card" style="--accent:#f97316">
+        <div class="info-icon" style="background:rgba(249,115,22,.12)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6 v6 l4 2"/></svg>
+        </div>
+        <h4>Louvain Method</h4>
+        <p>Greedily optimizes modularity Q in two phases: local node reassignment and community contraction. Produces hierarchical communities naturally and scales to millions of nodes.</p>
+        <div class="info-tags"><span>O(n log n)</span><span>Modularity</span><span>Hierarchical</span></div>
+      </div>
+      <div class="info-card glass-card" style="--accent:#ec4899">
+        <div class="info-icon" style="background:rgba(236,72,153,.12)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2"><circle cx="8" cy="8" r="4"/><circle cx="16" cy="16" r="4"/><circle cx="8" cy="16" r="2" stroke-width="1.5"/></svg>
+        </div>
+        <h4>DBSCAN</h4>
+        <p>Identifies core nodes with ≥minPts neighbors within ε-radius and expands clusters via reachability. Naturally detects noise/outlier nodes and requires no prior knowledge of cluster count.</p>
+        <div class="info-tags"><span>O(n log n)</span><span>Density</span><span>Noise-aware</span></div>
+      </div>
+      <div class="info-card glass-card" style="--accent:#22c55e">
+        <div class="info-icon" style="background:rgba(34,197,94,.12)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><path d="M4 12 L20 12"/><path d="M8 6 L12 4 L16 6"/><path d="M8 18 L12 20 L16 18"/><circle cx="12" cy="12" r="2"/></svg>
+        </div>
+        <h4>Girvan-Newman</h4>
+        <p>Iteratively removes edges with highest betweenness centrality, progressively splitting the graph into communities. Produces a full dendrogram and excels at detecting bridge-heavy communities.</p>
+        <div class="info-tags"><span>O(m²n)</span><span>Divisive</span><span>Dendrogram</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-logo">GraphCluster<span style="color:#7c5cfc">Lab</span></div>
+      <p class="footer-note">Built for educational and research purposes. Algorithms run client-side in JavaScript.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
